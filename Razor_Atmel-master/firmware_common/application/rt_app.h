@@ -1,24 +1,24 @@
 /**********************************************************************************************************************
-File: user_app1.h                                                                
+File: rt_app.h
 
 ----------------------------------------------------------------------------------------------------------------------
-To start a new task using this user_app1 as a template:
-1. Follow the instructions at the top of user_app1.c
-2. Use ctrl-h to find and replace all instances of "user_app1" with "yournewtaskname"
-3. Use ctrl-h to find and replace all instances of "UserApp1" with "YourNewTaskName"
-4. Use ctrl-h to find and replace all instances of "USER_APP1" with "YOUR_NEW_TASK_NAME"
+To start a new task using this rt_app as a template:
+1. Follow the instructions at the top of rt_app.c
+2. Use ctrl-h to find and replace all instances of "rt_app" with "yournewtaskname"
+3. Use ctrl-h to find and replace all instances of "RtApp" with "YourNewTaskName"
+4. Use ctrl-h to find and replace all instances of "RT_APP" with "YOUR_NEW_TASK_NAME"
 5. Add #include yournewtaskname.h" to configuration.h
 6. Add/update any special configurations required in configuration.h (e.g. peripheral assignment and setup values)
 7. Delete this text (between the dashed lines)
 ----------------------------------------------------------------------------------------------------------------------
 
 Description:
-Header file for user_app1.c
+Header file for rt_app.c
 
 **********************************************************************************************************************/
 
-#ifndef __USER_APP1_H
-#define __USER_APP1_H
+#ifndef __RT_APP_H
+#define __RT_APP_H
 
 /**********************************************************************************************************************
 Type Definitions
@@ -28,7 +28,7 @@ Type Definitions
 /**********************************************************************************************************************
 Constants / Definitions
 **********************************************************************************************************************/
-
+#define NUMBER_OF_TRIALS (u8) 5
 
 /**********************************************************************************************************************
 Function Declarations
@@ -37,13 +37,14 @@ Function Declarations
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* Public functions                                                                                                   */
 /*--------------------------------------------------------------------------------------------------------------------*/
+void RtApp_AllLedsOn(void);
 
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* Protected functions                                                                                                */
 /*--------------------------------------------------------------------------------------------------------------------*/
-void UserApp1Initialize(void);
-void UserApp1RunActiveState(void);
+void RtAppInitialize(void);
+void RtAppRunActiveState(void);
 
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -54,12 +55,17 @@ void UserApp1RunActiveState(void);
 /***********************************************************************************************************************
 State Machine Declarations
 ***********************************************************************************************************************/
-static void UserApp1SM_Idle(void);    
+static void RtAppSM_Idle(void);
 
-static void UserApp1SM_Error(void);         
+static void RtAppSM_Error(void);
+static void RtAppSM_WFT(void);          // Wait for reaction trigger (sound or LED flash)
+static void RtAppSM_WFR(void);          // Wait for the user's Reaction.
+static void RtAppSM_ShowTime(void);     // Shows the reaction timer to the user for 3 seconds
+static void RtAppSM_CalcResults(void);  // Calculates mean reaction time
+static void RtAppSM_DispResults(void);  // Displays Reaction time results
 
 
-#endif /* __USER_APP1_H */
+#endif /* __RT_APP_H */
 
 
 /*--------------------------------------------------------------------------------------------------------------------*/
