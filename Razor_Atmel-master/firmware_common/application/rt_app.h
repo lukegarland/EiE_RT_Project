@@ -29,6 +29,9 @@ Type Definitions
 Constants / Definitions
 **********************************************************************************************************************/
 #define NUMBER_OF_TRIALS (u8) 5
+#define MAX_WAIT (u16) 10000
+#define MIN_WAIT (u16) 5000
+#define SHOW_WAIT1 (u16) 2000
 
 /**********************************************************************************************************************
 Function Declarations
@@ -37,8 +40,6 @@ Function Declarations
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* Public functions                                                                                                   */
 /*--------------------------------------------------------------------------------------------------------------------*/
-void RtApp_AllLedsOn(void);
-
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* Protected functions                                                                                                */
@@ -50,6 +51,8 @@ void RtAppRunActiveState(void);
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* Private functions                                                                                                  */
 /*--------------------------------------------------------------------------------------------------------------------*/
+void RtApp_AllLedsOn(void);
+void RtApp_AllLedsOff(void);
 
 
 /***********************************************************************************************************************
@@ -58,10 +61,13 @@ State Machine Declarations
 static void RtAppSM_Idle(void);
 
 static void RtAppSM_Error(void);
+static void RtAppSM_RFT(void);          // Ready for Trigger
 static void RtAppSM_WFT(void);          // Wait for reaction trigger (sound or LED flash)
 static void RtAppSM_WFR(void);          // Wait for the user's Reaction.
+static void RtAppSM_TimeToStr(void);
 static void RtAppSM_ShowTime(void);     // Shows the reaction timer to the user for 3 seconds
 static void RtAppSM_CalcResults(void);  // Calculates mean reaction time
+static void RtAppSM_ResultsToStr(void);
 static void RtAppSM_DispResults(void);  // Displays Reaction time results
 
 
