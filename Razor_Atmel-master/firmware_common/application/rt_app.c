@@ -1,22 +1,9 @@
 /**********************************************************************************************************************
 File: rt_app.c
 
-----------------------------------------------------------------------------------------------------------------------
-To start a new task using this rt_app as a template:
- 1. Copy both rt_app.c and rt_app.h to the Application directory
- 2. Rename the files yournewtaskname.c and yournewtaskname.h
- 3. Add yournewtaskname.c and yournewtaskname.h to the Application Include and Source groups in the IAR project
- 4. Use ctrl-h (make sure "Match Case" is checked) to find and replace all instances of "rt_app" with "yournewtaskname"
- 5. Use ctrl-h to find and replace all instances of "RtApp" with "YourNewTaskName"
- 6. Use ctrl-h to find and replace all instances of "RT_APP" with "YOUR_NEW_TASK_NAME"
- 7. Add a call to YourNewTaskNameInitialize() in the init section of main
- 8. Add a call to YourNewTaskNameRunActiveState() in the Super Loop section of main
- 9. Update yournewtaskname.h per the instructions at the top of yournewtaskname.h
-10. Delete this text (between the dashed lines) and update the Description below to describe your task
-----------------------------------------------------------------------------------------------------------------------
 
 Description:
-This is a rt_app.c file template
+This is an application to test one's reaction time to visual stimulus.
 
 ------------------------------------------------------------------------------------------------------------------------
 API:
@@ -58,15 +45,29 @@ Variable names shall start with "RtApp_" and be declared as static.
 ***********************************************************************************************************************/
 static fnCode_type RtApp_StateMachine;            /* The state machine function pointer */
 //static u32 RtApp_u32Timeout;                      /* Timeout counter used across states */
-static u16      u16RtApp_ReactTime;
-static u16      u16RtApp_AvgTime;
-static u32      u32RtApp_TotalTime;
+static u16      u16RtApp_ReactTimer;  // Running Reaction time
+static u16      u16RtApp_ReactTimeP1; // Player 1 Reaction time
+static u16      u16RtApp_ReactTimeP2; // Player 2 Reaction time
+
+static u16      u16RtApp_AvgTimeP1;
+static u16      u16RtApp_AvgTimeP2;
+
+static u32      u32RtApp_TotalTimeP1;
+static u32      u32RtApp_TotalTimeP2;
+
 static u16      u16RtApp_WaitCount;
 static u16      u16RtApp_WaitTime;
 static u16      u16RtApp_STWait;
 static u8       u8RtApp_Trials;
-static s8       au8RtApp_TimeStr[15];
-static s8       au8RtApp_AvgTimeStr[15];
+static char      au8RtApp_TimeStrP1[20];
+static char      au8RtApp_TimeStrP2[20];
+
+static char      au8RtApp_AvgTimeStrP1[23];
+static char      au8RtApp_AvgTimeStrP2[23];
+
+
+static bool b_button0Pressed;
+static bool b_button1Pressed;
 
 /**********************************************************************************************************************
 Function Definitions
@@ -94,12 +95,13 @@ Promises:
 */
 void RtAppInitialize(void)
 {
-
-
+    ButtonAcknowledge(BUTTON0);
+//  PWMAudioSetFrequency(BUZZER1,A4);
     PixelAddressType pa_WelcomeMessageLoc1 = {LCD_SMALL_FONT_LINE2, 3};
     LcdClearScreen();
     LcdLoadString("Push BUTTON0 to start!", LCD_FONT_SMALL, &pa_WelcomeMessageLoc1);
-    u32RtApp_TotalTime = 0;
+    u32RtApp_TotalTimeP1 = 0;
+    u32RtApp_TotalTimeP2 = 0;
 
 
 
@@ -148,15 +150,20 @@ void RtAppRunActiveState(void)
 
 void RtApp_AllLedsOn(void)
 {
-    for(u8 i = 0; i < 12; i++)
-    {
-        // LedOn(0+i);
-        LedPWM(0+i,LED_PWM_20);
+        LedPWM(RED0,LED_PWM_15);
+        LedPWM(GREEN0,LED_PWM_15);
+        LedPWM(GREEN1,LED_PWM_15);
+        LedPWM(RED1,LED_PWM_15);
+        LedPWM(RED2,LED_PWM_15);
+        LedPWM(GREEN2,LED_PWM_15);
+        LedPWM(RED3,LED_PWM_15);
+        LedPWM(GREEN3,LED_PWM_15);
 
-    }
+
 }
 void RtApp_AllLedsOff(void)
 {
+    // TURN ALL LEDS OFF
       for(u8 i = 0; i < 12; i++)
         LedOff(0+i);
 
@@ -200,11 +207,13 @@ static void RtAppSM_RFT(void)
         // (default 5s and 10s)
 
     static PixelAddressType pa_WFTLine1 = {LCD_SMALL_FONT_LINE2, 10};
-    static PixelAddressType pa_WFTLine2 = {LCD_SMALL_FONT_LINE4, 24};
+    static PixelAddressType pa_WFTLine2 = {LCD_SMALL_FONT_LINE4, 10};
+    static PixelAddressType pa_WFTLine3 = {LCD_SMALL_FONT_LINE6, 24};
 
-    LcdLoadString("Press BUTTON0 when",LCD_FONT_SMALL,&pa_WFTLine1);
+    LcdLoadString("P1 : BUTTON0 ",LCD_FONT_SMALL,&pa_WFTLine1);
+    LcdLoadString("P2 : BUTTON1 ",LCD_FONT_SMALL,&pa_WFTLine2);
 
-    LcdLoadString("all LEDs flash",LCD_FONT_SMALL,&pa_WFTLine2);
+    LcdLoadString("When LEDs flash",LCD_FONT_SMALL,&pa_WFTLine3);
 
     RtApp_StateMachine = RtAppSM_WFT;
 }
@@ -216,36 +225,54 @@ static void RtAppSM_WFT(void)
     if(u16RtApp_WaitCount == u16RtApp_WaitTime)
     {
 
-        u16RtApp_ReactTime = 0;
-        RtApp_StateMachine = RtAppSM_WFR;
+        u16RtApp_ReactTimer = 0;
         u16RtApp_WaitCount = 0;
-
+        b_button0Pressed = 0;
+        b_button1Pressed = 0;
+        RtApp_StateMachine = RtAppSM_WFR;
         RtApp_AllLedsOn();
     }else
     {
         u16RtApp_WaitCount++;
     }
 
-
-
-
-
 }
 
 static void RtAppSM_WFR(void)
 {
-    if(WasButtonPressed(BUTTON0))
+
+
+
+
+    if(WasButtonPressed(BUTTON0) && b_button0Pressed ==0)
     {
         ButtonAcknowledge(BUTTON0);
+        u16RtApp_ReactTimeP1 = u16RtApp_ReactTimer;
+        b_button0Pressed = 1;
+    }
+    if (WasButtonPressed(BUTTON1) && b_button1Pressed == 0)
+    {
+        ButtonAcknowledge(BUTTON1);
+        u16RtApp_ReactTimeP2 = u16RtApp_ReactTimer;
+        b_button1Pressed = 1;
 
+    }
+
+    if(b_button0Pressed & b_button1Pressed) //If both buttons have been pressed, move to next state
+                                            // (Time to str)
+    {
         RtApp_AllLedsOff();
         RtApp_StateMachine = RtAppSM_TimeToStr;
+    }
 
-    }else u16RtApp_ReactTime++;
+    u16RtApp_ReactTimer++;
+
 }
 static void RtAppSM_TimeToStr(void)
 {
-    sprintf(au8RtApp_TimeStr,"%d.%d seconds",u16RtApp_ReactTime / 1000, u16RtApp_ReactTime % 1000);
+    sprintf(au8RtApp_TimeStrP1,"P1 : %d.%d seconds",u16RtApp_ReactTimeP1 / 1000, u16RtApp_ReactTimeP1 % 1000);
+    sprintf(au8RtApp_TimeStrP2,"P2 : %d.%d seconds",u16RtApp_ReactTimeP2 / 1000, u16RtApp_ReactTimeP2 % 1000);
+
     RtApp_StateMachine = RtAppSM_ShowTime;
     LcdClearScreen();
 }
@@ -253,17 +280,14 @@ static void RtAppSM_TimeToStr(void)
 static void RtAppSM_ShowTime(void)
 {
 
-    static PixelAddressType pa_ST = {LCD_SMALL_FONT_LINE3, 30};
-    LcdLoadString(au8RtApp_TimeStr, LCD_FONT_SMALL, &pa_ST);
+    static PixelAddressType pa_ShowP1 = {LCD_SMALL_FONT_LINE2, 10};
+    static PixelAddressType pa_ShowP2 = {LCD_SMALL_FONT_LINE4, 10};
+
+    LcdLoadString(au8RtApp_TimeStrP1, LCD_FONT_SMALL, &pa_ShowP1);
+    LcdLoadString(au8RtApp_TimeStrP2, LCD_FONT_SMALL, &pa_ShowP2);
+
     u16RtApp_STWait = 0;
     RtApp_StateMachine = RtAppSM_CalcResults;
-
-
-
-
-
-
-
 }
 
 static void RtAppSM_CalcResults(void)
@@ -274,8 +298,10 @@ static void RtAppSM_CalcResults(void)
         LcdClearScreen();
 
         u8RtApp_Trials++;
-        u32RtApp_TotalTime += u16RtApp_ReactTime;
-        u16RtApp_ReactTime = 0;
+        u32RtApp_TotalTimeP1 += u16RtApp_ReactTimeP1;
+        u32RtApp_TotalTimeP2 += u16RtApp_ReactTimeP2;
+
+        u16RtApp_ReactTimer = 0;
 
         if(u8RtApp_Trials == NUMBER_OF_TRIALS)
         {
@@ -288,41 +314,50 @@ static void RtAppSM_CalcResults(void)
 
 }
 
-
-
 static void RtAppSM_ResultsToStr(void)
 {
-     u16RtApp_AvgTime = u32RtApp_TotalTime/NUMBER_OF_TRIALS;
-     sprintf(au8RtApp_AvgTimeStr,"%d.%d seconds",u16RtApp_AvgTime / 1000, u16RtApp_AvgTime % 1000);
+     u16RtApp_AvgTimeP1 = u32RtApp_TotalTimeP1/NUMBER_OF_TRIALS;
+     u16RtApp_AvgTimeP2 = u32RtApp_TotalTimeP2/NUMBER_OF_TRIALS;
+
+     sprintf(au8RtApp_AvgTimeStrP1,"P1 :   %d.%d seconds",u16RtApp_AvgTimeP1 / 1000, u16RtApp_AvgTimeP1 % 1000);
+     sprintf(au8RtApp_AvgTimeStrP2,"P2 :   %d.%d seconds",u16RtApp_AvgTimeP2 / 1000, u16RtApp_AvgTimeP2 % 1000);
+
      RtApp_StateMachine = RtAppSM_DispResults;
 
 }
 
-
 static void RtAppSM_DispResults(void)
 {
 
-    PixelAddressType pa_disp1 = {LCD_SMALL_FONT_LINE1,0};
-    PixelAddressType pa_disp2 = {LCD_SMALL_FONT_LINE4,30};
-    PixelAddressType pa_disp3 = {LCD_SMALL_FONT_LINE7, 12};
-    LcdLoadString("Average reaction time", LCD_FONT_SMALL, &pa_disp1);
-    LcdLoadString(au8RtApp_AvgTimeStr, LCD_FONT_SMALL, &pa_disp2);
-    LcdLoadString("BUTTON0 to restart", LCD_FONT_SMALL, &pa_disp3);
+    PixelAddressType pa_disp1 = {LCD_SMALL_FONT_LINE0,6};
+    PixelAddressType pa_disp2 = {LCD_SMALL_FONT_LINE2,0};
+    PixelAddressType pa_disp3 = {LCD_SMALL_FONT_LINE4-3,0};
+    PixelAddressType pa_disp4 = {LCD_SMALL_FONT_LINE5+2,25};
+    PixelAddressType pa_disp5 = {LCD_SMALL_FONT_LINE7, 12};
 
-    if(WasButtonPressed(BUTTON0))
+    LcdLoadString("Mean reaction times", LCD_FONT_SMALL, &pa_disp1);
+    LcdLoadString(au8RtApp_AvgTimeStrP1, LCD_FONT_SMALL, &pa_disp2);
+    LcdLoadString(au8RtApp_AvgTimeStrP2, LCD_FONT_SMALL, &pa_disp3);
+
+    if(u16RtApp_AvgTimeP1 < u16RtApp_AvgTimeP2)
+
+        LcdLoadString("PLAYER 1 WINS!", LCD_FONT_SMALL, &pa_disp4);
+
+    else if(u16RtApp_AvgTimeP1 > u16RtApp_AvgTimeP2)
+
+        LcdLoadString("PLAYER 2 WINS!", LCD_FONT_SMALL, &pa_disp4);
+
+    else LcdLoadString("TIE!", LCD_FONT_SMALL, &pa_disp4);
+
+
+    LcdLoadString("BUTTON1 to restart", LCD_FONT_SMALL, &pa_disp5);
+
+    if(WasButtonPressed(BUTTON1))
     {
-        ButtonAcknowledge(BUTTON0);
+        ButtonAcknowledge(BUTTON1);
     RtApp_StateMachine = RtAppInitialize;
     }
 }
-
-
-
-
-
-
-
-
 
 /*-------------------------------------------------------------------------------------------------------------------*/
 /* Handle an error */

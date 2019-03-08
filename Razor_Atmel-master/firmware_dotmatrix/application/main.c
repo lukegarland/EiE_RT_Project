@@ -96,7 +96,7 @@ void main(void)
 
     /* Applications */
     RtAppRunActiveState();
-    //UserApp2RunActiveState();
+    UserApp2RunActiveState();
     //UserApp3RunActiveState();
 
     /* System sleep*/

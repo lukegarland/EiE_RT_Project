@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <settings>
     <Stack>
-        <FillEnabled>0</FillEnabled>
+        <FillEnabled>1</FillEnabled>
         <OverflowWarningsEnabled>1</OverflowWarningsEnabled>
         <WarningThreshold>90</WarningThreshold>
         <SpWarningsEnabled>1</SpWarningsEnabled>
@@ -16,7 +16,7 @@
         <LeaveTargetRunning>_ 0</LeaveTargetRunning>
     </JLinkDriver>
     <DebugChecksum>
-        <Checksum>2088988631</Checksum>
+        <Checksum>2084888809</Checksum>
     </DebugChecksum>
     <Exceptions>
         <StopOnUncaught>_ 0</StopOnUncaught>
@@ -28,6 +28,9 @@
     <CallStack>
         <ShowArgs>0</ShowArgs>
     </CallStack>
+    <Disassembly>
+        <MixedMode>1</MixedMode>
+    </Disassembly>
     <Trace1>
         <Enabled>0</Enabled>
         <ShowSource>1</ShowSource>
