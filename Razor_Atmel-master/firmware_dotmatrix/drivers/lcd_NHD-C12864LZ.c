@@ -1,11 +1,11 @@
 /***********************************************************************************************************************
-File: lcd_NHD-C12864LZ.c      
+File: lcd_NHD-C12864LZ.c
 
 Description:
 LCD implementation for Newhaven NHD-C12864LZ.  This file contains the task definition
 for the LCD handler.  The LCD is automatically refreshed every LCD_REFRESH_TIME milliseconds.
 Only changed pixel data is sent with each refresh to minimize processor time.
-A copy of the LCD memory is maintained in RAM as 2D array where each bit corresponds to one pixel.  
+A copy of the LCD memory is maintained in RAM as 2D array where each bit corresponds to one pixel.
 Any application may write to the LCD using the API, though this only impacts the local RAM.  All application addressing of
 the LCD is managed in pixels -- mapping pixel addresses in RAM to the LCD is fully managed
 by this driver.
@@ -65,14 +65,14 @@ PixelBlockType
 }
 
 void LcdSetPixel(PixelAddressType* sPixelAddress_)
-Turn on one pixel in the LCD RAM.  
+Turn on one pixel in the LCD RAM.
 - sPixelAddress_ is the address of the pixel to set
 e.g. Turn on a pixel in the center of the screen:
 PixelAddressType sTargetPixel = {32, 64};
 LcdSetPixel(&sTargetPixel);
 
 void LcdClearPixel(PixelAddressType* sPixelAddress_)
-Turn off one pixel in the LCD RAM.  
+Turn off one pixel in the LCD RAM.
 - sPixelAddress_ is the address of the pixel to clear
 e.g. Turn off a pixel in the center of the screen:
 PixelAddressType sTargetPixel = {32, 64};
@@ -97,18 +97,18 @@ Clears all of the current pixel data.
 e.g. LcdClearScreen();
 
 void LcdLoadString(const unsigned char* pu8String_, LcdFontType eFont_, PixelAddressType* sStartPixel_);
-Updates the local LCD memory with an ASCII string in the font specified.  Any pixels that 
+Updates the local LCD memory with an ASCII string in the font specified.  Any pixels that
 will not fit on the LCD are ignored (but this will allow for partial characters to be drawn).
 - pu8String_: pointer to C-string to be printed
 - eFont_: font of choice
 - sStartPixel_: location where the top left pixel of the first character bitmap square is specifed
 e.g. Load a string on the bottom text line left justified.
-PixelAddressType sTestStringLocation = {LCD_SMALL_FONT_LINE7, LCD_LEFT_MOST_COLUMN}; 
+PixelAddressType sTestStringLocation = {LCD_SMALL_FONT_LINE7, LCD_LEFT_MOST_COLUMN};
 u8 au8TestString[] = "Testing";
-LcdLoadString(au8TestString, LCD_FONT_SMALL, &sTestStringLocation); 
+LcdLoadString(au8TestString, LCD_FONT_SMALL, &sTestStringLocation);
 
 void LcdLoadBitmap(u8* aau8Bitmap_, PixelBlockType* sBitmapSize_)
-Places a bitmap into the LCD RAM.  
+Places a bitmap into the LCD RAM.
 - pu8Bitmap_ points to the start of a bitmap image array.
 - sBitmapSize_ the starting pixel location (top left of the image)
 e.g. Load logo in the top left corner of the screen
@@ -121,14 +121,14 @@ sEngenuicsImage.u16ColumnSize = 50;
 LcdLoadBitmap(&aau8EngenuicsLogoBlack[0][0], sEngenuicsImage);
 
 bool LcdCommand(u8 u8Command_)
-Sends a control command to the LCD.  
+Sends a control command to the LCD.
 - u8Command_: LCD_DISPLAY_ON, LCD_DISPLAY_OFF, LCD_PIXEL_TEST_ON, LCD_PIXEL_TEST_OFF
 e.g. LcdCommand(PIXEL_TEST_ON);
 
 
 NOT YET IMPLEMENTED:
 LcdShift(PixelBlockType eShiftArea_, u16 u16PixelsToShift_, LcdShiftType eDirection_):
-Shifts a block of pixels by the specified number of pixels.  Any data shifted off of the 
+Shifts a block of pixels by the specified number of pixels.  Any data shifted off of the
 edge of the specified shift area are lost.
 - eShiftArea_: the block of pixels to shift
 - u16PixelsToShift_: the number of pixels to shift the block
@@ -159,7 +159,7 @@ All Global variable names shall start with "G_xxLcd"
 /* New variables */
 u8 G_aau8LcdRamImage[LCD_IMAGE_ROWS][LCD_IMAGE_COLUMNS];    /* A complete copy of the LCD image in RAM */
 
-PixelBlockType G_sLcdClearWholeScreen = 
+PixelBlockType G_sLcdClearWholeScreen =
 {
   .u16RowStart = 0,
   .u16ColumnStart = 0,
@@ -167,7 +167,7 @@ PixelBlockType G_sLcdClearWholeScreen =
   .u16ColumnSize = LCD_COLUMNS
 };
 
-PixelBlockType G_sLcdClearLine0 = 
+PixelBlockType G_sLcdClearLine0 =
 {
   .u16RowStart = LCD_SMALL_FONT_LINE0,
   .u16ColumnStart = 0,
@@ -175,7 +175,7 @@ PixelBlockType G_sLcdClearLine0 =
   .u16ColumnSize = LCD_COLUMNS
 };
 
-PixelBlockType G_sLcdClearLine1 = 
+PixelBlockType G_sLcdClearLine1 =
 {
   .u16RowStart = LCD_SMALL_FONT_LINE1,
   .u16ColumnStart = 0,
@@ -183,7 +183,7 @@ PixelBlockType G_sLcdClearLine1 =
   .u16ColumnSize = LCD_COLUMNS
 };
 
-PixelBlockType G_sLcdClearLine2 = 
+PixelBlockType G_sLcdClearLine2 =
 {
   .u16RowStart = LCD_SMALL_FONT_LINE2,
   .u16ColumnStart = 0,
@@ -191,7 +191,7 @@ PixelBlockType G_sLcdClearLine2 =
   .u16ColumnSize = LCD_COLUMNS
 };
 
-PixelBlockType G_sLcdClearLine3 = 
+PixelBlockType G_sLcdClearLine3 =
 {
   .u16RowStart = LCD_SMALL_FONT_LINE3,
   .u16ColumnStart = 0,
@@ -199,7 +199,7 @@ PixelBlockType G_sLcdClearLine3 =
   .u16ColumnSize = LCD_COLUMNS
 };
 
-PixelBlockType G_sLcdClearLine4 = 
+PixelBlockType G_sLcdClearLine4 =
 {
   .u16RowStart = LCD_SMALL_FONT_LINE4,
   .u16ColumnStart = 0,
@@ -207,7 +207,7 @@ PixelBlockType G_sLcdClearLine4 =
   .u16ColumnSize = LCD_COLUMNS
 };
 
-PixelBlockType G_sLcdClearLine5 = 
+PixelBlockType G_sLcdClearLine5 =
 {
   .u16RowStart = LCD_SMALL_FONT_LINE5,
   .u16ColumnStart = 0,
@@ -215,7 +215,7 @@ PixelBlockType G_sLcdClearLine5 =
   .u16ColumnSize = LCD_COLUMNS
 };
 
-PixelBlockType G_sLcdClearLine6 = 
+PixelBlockType G_sLcdClearLine6 =
 {
   .u16RowStart = LCD_SMALL_FONT_LINE6,
   .u16ColumnStart = 0,
@@ -223,7 +223,7 @@ PixelBlockType G_sLcdClearLine6 =
   .u16ColumnSize = LCD_COLUMNS
 };
 
-PixelBlockType G_sLcdClearLine7 = 
+PixelBlockType G_sLcdClearLine7 =
 {
   .u16RowStart = LCD_SMALL_FONT_LINE7,
   .u16ColumnStart = 0,
@@ -277,13 +277,13 @@ static PixelBlockType Lcd_sCurrentUpdateArea;                     /* Area of LCD
 
 static u8 Lcd_au8MessageInit[]  = "LCD Ready\r\n";
 static u8 Lcd_au8MessageWelcome[] = "SAM3U2 DOT MATRIX";
-                                 
+
 static  u8 Lcd_au8SetupArray[] = {LCD_BIAS_LOW, LCD_ADC_SELECT_NORMAL, LCD_COMMON_MODE1, LCD_COMMON_MODE0, LCD_DISPLAY_LINE_SETx,
                                   LCD_VOLTAGTE_REG_SETx | SET_BIT0 | SET_BIT2,
                                   LCD_EVOLUME_UNLOCK_, LCD_EVOLUME_LEVEL,
                                   LCD_POWER_CONTROLLER_SETx | BOOST_ON | VREG_ON | VFOLLOW_ON,
                                   LCD_DISPLAY_ON, LCD_PIXEL_TEST_ON
-                                 }; 
+                                 };
 
 
 /***********************************************************************************************************************
@@ -304,17 +304,17 @@ Requires:
  - pu8String_ points to a null-terminated C-string
  - eFont_ selects the font to use to print the string
  - sStartPixel_ is the pixel location for the top left pixel of the first character bitmap (assuming a rectangular bitmap area)
-    
+
 Promises:
- - The string is parsed and the bitmap for each character is loaded into the 
+ - The string is parsed and the bitmap for each character is loaded into the
    local LCD RAM G_aau8LcdRamImage.  Any characters that will not fit on the screen are ignored.
-   
+
 */
-void LcdLoadString(const unsigned char* pu8String_, LcdFontType eFont_, PixelAddressType* sStartPixel_) 
+void LcdLoadString(const unsigned char* pu8String_, LcdFontType eFont_, PixelAddressType* sStartPixel_)
 {
   u8 u8FontWidth;
   PixelBlockType sLetterPosition;
-  
+
   /* Initialize sLetterPosition struct based on font */
   sLetterPosition.u16RowStart = sStartPixel_->u16PixelRowAddress;
   sLetterPosition.u16ColumnStart = sStartPixel_->u16PixelColumnAddress;
@@ -350,12 +350,12 @@ void LcdLoadString(const unsigned char* pu8String_, LcdFontType eFont_, PixelAdd
    {
      LcdLoadBitmap(&G_aau8BigFonts[*pu8String_ - NUMBER_ASCII_TO_DEC][0][0], &sLetterPosition);
    }
-    
+
     /* Update for the next character */
     sLetterPosition.u16ColumnStart += u8FontWidth;
     pu8String_++;
   }
-  
+
 } /* end LcdLoadString */
 
 
@@ -377,13 +377,13 @@ Promises:
 void LcdSetPixel(PixelAddressType* sPixelAddress_)
 {
   u8 u8ColumBitPosition = 0x01;
-  u8 u8ColumnGroup = sPixelAddress_->u16PixelColumnAddress / 8; 
-  
-  u8ColumBitPosition = u8ColumBitPosition << (sPixelAddress_->u16PixelColumnAddress % 8); 
+  u8 u8ColumnGroup = sPixelAddress_->u16PixelColumnAddress / 8;
+
+  u8ColumBitPosition = u8ColumBitPosition << (sPixelAddress_->u16PixelColumnAddress % 8);
 
   /* Set the correct bit in RAM */
   G_aau8LcdRamImage[sPixelAddress_->u16PixelRowAddress][u8ColumnGroup] |= u8ColumBitPosition;
-  
+
 } /* end LcdSetPixel */
 
 
@@ -405,13 +405,13 @@ Promises:
 void LcdClearPixel(PixelAddressType* sPixelAddress_)
 {
   u8 u8ColumBitPosition = 0x01;
-  u8 u8ColumnGroup = sPixelAddress_->u16PixelColumnAddress / 8; 
-  
-  u8ColumBitPosition = u8ColumBitPosition << (sPixelAddress_->u16PixelColumnAddress % 8); 
+  u8 u8ColumnGroup = sPixelAddress_->u16PixelColumnAddress / 8;
+
+  u8ColumBitPosition = u8ColumBitPosition << (sPixelAddress_->u16PixelColumnAddress % 8);
 
   /* Set the correct bit in RAM */
   G_aau8LcdRamImage[sPixelAddress_->u16PixelRowAddress][u8ColumnGroup] &= ~u8ColumBitPosition;
-  
+
 } /* end LcdClearPixel */
 
 
@@ -428,8 +428,8 @@ Requires:
  - The origin (0,0 pixel of the LCD RAM image) is at G_aau8LcdRamImage[0][0] bit 0
  - All LCD bitmaps are 2D arrays of pixel bits, where bit 0 at btimap[0][0] is the top left pixel
  - aau8Bitmap_ points to the first element of a 2D array. Since a 2D array cannot
-   be passed directly, indexing will be done manually (i.e. to access the jth 
-   element in the ith row aau8Bitmap_[i * u8ColumnSize_ + j] must be used instead 
+   be passed directly, indexing will be done manually (i.e. to access the jth
+   element in the ith row aau8Bitmap_[i * u8ColumnSize_ + j] must be used instead
    of aau8Bitmap_[i][j])
 
 
@@ -443,7 +443,7 @@ void LcdLoadBitmap(u8 const* aau8Bitmap_, PixelBlockType* sBitmapSize_)
   u8 u8RowIterations;
   u16 u16ColumnIterations;
   u16 u16Temp;
-  
+
   /* Make sure there are at least some pixels inside the LCD screen area */
   if( (sBitmapSize_-> u16RowStart < LCD_ROWS) && (sBitmapSize_-> u16ColumnStart < LCD_COLUMNS) )
   {
@@ -453,7 +453,7 @@ void LcdLoadBitmap(u8 const* aau8Bitmap_, PixelBlockType* sBitmapSize_)
     {
       u8RowIterations = LCD_ROWS - sBitmapSize_->u16RowStart;
     }
-    
+
     /* Setup the number of column iterations but check to prevent overflow */
     u16ColumnIterations = sBitmapSize_->u16ColumnSize;
     if( (sBitmapSize_->u16ColumnStart + u16ColumnIterations) > LCD_COLUMNS)
@@ -461,7 +461,7 @@ void LcdLoadBitmap(u8 const* aau8Bitmap_, PixelBlockType* sBitmapSize_)
       u16ColumnIterations = LCD_COLUMNS - sBitmapSize_->u16ColumnStart;
     }
 
-    /* Index i is the current row in the bitmap image, and the current row in the LCD RAM 
+    /* Index i is the current row in the bitmap image, and the current row in the LCD RAM
     image relative to sBitmapSize_->u16RowStart */
     for(u16 i = 0; i < u8RowIterations; i++)
     {
@@ -469,7 +469,7 @@ void LcdLoadBitmap(u8 const* aau8Bitmap_, PixelBlockType* sBitmapSize_)
       u8CurrentBitMaskBitmap = 0x01;
       u16BitGroupBitmap = 0;
 
-      /* The LCD RAM bit mask must start at whatever bit within the current group corresponds to the 
+      /* The LCD RAM bit mask must start at whatever bit within the current group corresponds to the
       starting column index */
       u8CurrentBitMaskLcdRAM =  0x01 << (sBitmapSize_->u16ColumnStart % 8);
       u16BitGroupLcdRAM = (sBitmapSize_->u16ColumnStart / 8);
@@ -489,7 +489,7 @@ void LcdLoadBitmap(u8 const* aau8Bitmap_, PixelBlockType* sBitmapSize_)
         {
           u16Temp = (i * ((sBitmapSize_->u16ColumnSize / 8) + 1)) + u16BitGroupBitmap;
         }
-            
+
         /* Set or clear appropirate bit in LCD RAM */
         if( aau8Bitmap_[u16Temp] & u8CurrentBitMaskBitmap )
         {
@@ -507,7 +507,7 @@ void LcdLoadBitmap(u8 const* aau8Bitmap_, PixelBlockType* sBitmapSize_)
           u8CurrentBitMaskBitmap = 0x01;
           u16BitGroupBitmap++;
         }
-        
+
         /* Shift the LCD RAM mask */
         u8CurrentBitMaskLcdRAM <<= 1;
         if(u8CurrentBitMaskLcdRAM == 0x00)
@@ -545,14 +545,14 @@ void LcdClearPixels(PixelBlockType* sPixelsToClear_)
   u16 u16BitGroup;
   u8 u8RowIterations;
   u16 u16ColumnIterations;
-  
+
   /* Setup the number of row iterations but check to prevent overflow */
   u8RowIterations = sPixelsToClear_->u16RowSize;
   if( (sPixelsToClear_->u16RowStart + u8RowIterations) > LCD_ROWS )
   {
     u8RowIterations = LCD_ROWS - sPixelsToClear_->u16RowStart;
   }
-  
+
   /* Setup the number of column iterations but check to prevent overflow */
   u16ColumnIterations = sPixelsToClear_->u16ColumnSize;
   if( (sPixelsToClear_->u16ColumnStart + u16ColumnIterations) > LCD_COLUMNS)
@@ -572,7 +572,7 @@ void LcdClearPixels(PixelBlockType* sPixelsToClear_)
     {
       /* Clear the current bit */
       G_aau8LcdRamImage[i][u16BitGroup] &=  ~u8CurrentBitMask;
-      
+
       /* Adjust the bit mask watching for advance to the next bit group */
       u8CurrentBitMask <<= 1;
       if(u8CurrentBitMask == 0x00)
@@ -584,7 +584,7 @@ void LcdClearPixels(PixelBlockType* sPixelsToClear_)
   } /* end row loop */
 
   LcdUpdateScreenRefreshArea(sPixelsToClear_);
-  
+
 } /* end LcdClearPixels() */
 
 
@@ -595,10 +595,10 @@ Description:
 Clears all pixel data.
 
 Requires:
- - 
+ -
 
 Promises:
- - G_aau8LcdRamImage[i][j] = 0 for 
+ - G_aau8LcdRamImage[i][j] = 0 for
 */
 void LcdClearScreen(void)
 {
@@ -610,10 +610,10 @@ void LcdClearScreen(void)
       G_aau8LcdRamImage[i][j] = 0;
     }
   }
-      
+
   /* Queue to refresh whole screen */
   LcdUpdateScreenRefreshArea(&G_sLcdClearWholeScreen);
-  
+
 } /* end LcdClearScreen() */
 
 
@@ -621,7 +621,7 @@ void LcdClearScreen(void)
 Function: LcdShift
 
 Description:
-Moves the pixels in a section of the LCD by a certain number of pixels in some direction.  
+Moves the pixels in a section of the LCD by a certain number of pixels in some direction.
 This function can be used for simple animations or for scrolling text.  Note that any pixels
 that are shifted outside of the defined area are lost.  This ensures that the function will
 not try to write pixels not on the screen, and that pixels moving inside a block will not
@@ -639,7 +639,7 @@ Promises:
 void LcdShift(PixelBlockType eShiftArea_, u16 u16PixelsToShift_, LcdShiftType eDirection_)
 {
   /* To be added some day */
-  
+
 } /* end LcdShift() */
 
 
@@ -662,20 +662,20 @@ bool LcdCommand(u8 u8Command_)
   {
     Lcd_u32Flags |= _LCD_FLAGS_COMMAND_IN_QUEUE;
     Lcd_au8TxBuffer[0] = u8Command_;
-  
+
     /* Set hardware for command mode and queue the message */
     LCD_COMMAND_MODE();
     Lcd_u32CurrentMsgToken = SspWriteData(Lcd_Ssp, 1, &Lcd_au8TxBuffer[0]);
-    
+
     /* Zero the timer so the command sends immediately and push the command out if initializing */
     Lcd_u32RefreshTimer = 0;
     LcdManualMode();
-    
+
     return TRUE;
   }
 
   return FALSE;
-  
+
 } /* end LcdCommand() */
 
 
@@ -687,7 +687,7 @@ bool LcdCommand(u8 u8Command_)
 Function: LcdInitialize
 
 Description:
-Initialize the local LCD RAM then boot and initialize the LCD.  Since so much 
+Initialize the local LCD RAM then boot and initialize the LCD.  Since so much
 data is transferred to the LCD and speed is essential, LCD transfers are
 generally assumed to work.  Unless critical data is being sent, then no checking
 is done during data transmission.
@@ -703,15 +703,15 @@ void LcdInitialize(void)
   u8 u8Size;
   PixelBlockType sEngenuicsImage;
   PixelAddressType sStringLocation;
-  
+
   /* Start with backlight on */
   LCD_BACKLIGHT_ON();
-  
+
   /* Initialize variables */
   Lcd_u32RefreshTimer = G_u32SystemTime1ms;
   Lcd_pfnStateMachine = LcdSM_Idle;
   Lcd_pu8RxDummyBuffer = Lcd_au8RxDummyBuffer;
-  
+
   /* Configure the SSP resource to be used for the application */
   Lcd_sSspConfig.SspPeripheral      = USART1;
   Lcd_sSspConfig.pCsGpioAddress     = AT91C_BASE_PIOB;
@@ -723,12 +723,12 @@ void LcdInitialize(void)
   Lcd_sSspConfig.eSspMode            = SPI_MASTER_AUTO_CS;
 
   Lcd_Ssp = SspRequest(&Lcd_sSspConfig);
-        
+
   /* Carry out the prescribed LCD initialization starting with delay after releasing reset */
   LCD_CS_ASSERT();
   LCD_RESET_DEASSERT();
   for(u32 i = 0; i < 10; i++);
-  
+
   LCD_RESET_ASSERT();
 
   Lcd_u32Timer = G_u32SystemTime1ms;
@@ -738,7 +738,7 @@ void LcdInitialize(void)
 
   Lcd_u32Timer = G_u32SystemTime1ms;
   while( !IsTimeUp(&Lcd_u32Timer, 2) );
- 
+
   /* Send settings array one command at a time - end with display and pixel test on */
   u8Size = sizeof(Lcd_au8SetupArray);
   for(u8 i = 0; i < u8Size; i++)
@@ -747,53 +747,53 @@ void LcdInitialize(void)
     Lcd_u32Timer = G_u32SystemTime1ms;
     while( !IsTimeUp(&Lcd_u32Timer, 5) );
   }
-  
+
   /* Clear LCD pixel data */
   LcdClearPixels(&G_sLcdClearWholeScreen);
   LcdManualMode();
- 
-  /* Short pixel test */  
+
+  /* Short pixel test */
   Lcd_u32Timer = G_u32SystemTime1ms;
   while( !IsTimeUp(&Lcd_u32Timer, 500) );
-  
+
   LcdCommand(LCD_PIXEL_TEST_OFF);
-  
+
 #if LCD_STARTUP_ANIMATION
-  /* Divide the Engenuics logo up into 4 equal pieces and put them at the corner of the LCD to 
+  /* Divide the Engenuics logo up into 4 equal pieces and put them at the corner of the LCD to
   ensure that the full range of pixels is being addressed correctly */
   u8 u8RowPosition = 0;
   for(u8 i = 0; i < 40; i++)
   {
     LcdClearPixels(&G_sLcdClearWholeScreen);
-  
+
     /* Top left */
     sEngenuicsImage.u16RowStart = 0;
     sEngenuicsImage.u16ColumnStart = i;
     sEngenuicsImage.u16RowSize = 25;
     sEngenuicsImage.u16ColumnSize = 25;
     LcdLoadBitmap(&aau8EngenuicsLogoBlackQ1[0][0], &sEngenuicsImage);
-  
+
     /* Top right */
     sEngenuicsImage.u16RowStart = 0;
     sEngenuicsImage.u16ColumnStart = LCD_COLUMNS - 25 - i;
     LcdLoadBitmap(&aau8EngenuicsLogoBlackQ2[0][0], &sEngenuicsImage);
-  
+
     /* Bottom left */
     sEngenuicsImage.u16RowStart = LCD_ROWS - 25 - u8RowPosition;
     sEngenuicsImage.u16ColumnStart = i;
     LcdLoadBitmap(&aau8EngenuicsLogoBlackQ3[0][0], &sEngenuicsImage);
-    
+
     /* Bottom right */
     sEngenuicsImage.u16RowStart = LCD_ROWS - 25 - u8RowPosition;
     sEngenuicsImage.u16ColumnStart = LCD_COLUMNS - 25 - i;
     LcdLoadBitmap(&aau8EngenuicsLogoBlackQ4[0][0], &sEngenuicsImage);
-  
+
     /* Write the MPGL2 String in the middle */
     sStringLocation.u16PixelColumnAddress = LCD_CENTER_COLUMN - ( strlen((char const*)Lcd_au8MessageWelcome) * (LCD_SMALL_FONT_COLUMNS + LCD_SMALL_FONT_SPACE) / 2 );
     sStringLocation.u16PixelRowAddress = LCD_SMALL_FONT_LINE7;
     LcdLoadString(Lcd_au8MessageWelcome, LCD_FONT_SMALL, &sStringLocation);
     LcdManualMode();
-       
+
     /* Adjust the row by one every few iterations */
     if( (i % 3) == 0)
     {
@@ -805,12 +805,12 @@ void LcdInitialize(void)
       }
     }
   }
-  
+
 #else /* LCD_STARTUP_ANIMATION */
-  
+
   /* Show static image in middle of screen */
   LcdClearPixels(&G_sLcdClearWholeScreen);
-  
+
   sEngenuicsImage.u16RowStart = 0;
   sEngenuicsImage.u16ColumnStart = 40;
   sEngenuicsImage.u16RowSize = LCD_IMAGE_ROW_SIZE_50PX;
@@ -828,7 +828,7 @@ void LcdInitialize(void)
   /* Announce on the debug port that LCD setup is ready */
   G_u32ApplicationFlags |= _APPLICATION_FLAGS_LCD;
   DebugPrintf(Lcd_au8MessageInit);
-  
+
 } /* end LcdInitialize() */
 
 
@@ -863,31 +863,31 @@ Runs a cycle of the LCD state machine until there are no messages queued up to t
 
 Requires:
  - SSP state machine ready for manual mode
-           
+
 Promises:
  - The current command for an LCD will be sent; or an LCD refresh will be carried out.
-  
+
 */
 void LcdManualMode(void)
 {
   u32 u32ManualModeTimer;
-  
+
   if(G_u32SystemFlags & _SYSTEM_INITIALIZING)
   {
     /* Zero the refresh timer so the LCD refreshes right away in manual mode */
-    Lcd_u32RefreshTimer = 0; 
+    Lcd_u32RefreshTimer = 0;
     Lcd_u32Flags |= _LCD_MANUAL_MODE;
     while(Lcd_u32Flags & _LCD_MANUAL_MODE)
     {
       /* Run the two SMs that are needed to send LCD bytes */
       Lcd_pfnStateMachine();
-      
+
       /* Provide an equivalent system tick delay */
       u32ManualModeTimer = G_u32SystemTime1ms;
       while( !IsTimeUp(&u32ManualModeTimer, 1) );
     }
   }
-  
+
 } /* end LcdManualMode() */
 
 
@@ -900,7 +900,7 @@ void LcdManualMode(void)
 Function: LcdSetStartAddressForDataTransfer
 
 Description:
-Queues a message to set the LCD cursor to the correct position in preparation 
+Queues a message to set the LCD cursor to the correct position in preparation
 for data that will be sent to update the screen.  The starting address is mapped appropriately
 for the actual physical LCD screen.
 
@@ -911,18 +911,18 @@ Requires:
 Promises:
  - Command is queued to SSP
 */
-static bool LcdSetStartAddressForDataTransfer(u8 u8LocalRamPage_)          
+static bool LcdSetStartAddressForDataTransfer(u8 u8LocalRamPage_)
 {
   u16 u16ColumnStartLcd = LCD_COLUMNS - (Lcd_sCurrentUpdateArea.u16ColumnStart + Lcd_sCurrentUpdateArea.u16ColumnSize);
-  
+
   if( !(Lcd_u32Flags & _LCD_FLAGS_COMMAND_IN_QUEUE) )
   {
     /* Set the message bytes for the current transfer */
     Lcd_au8TxBuffer[0] = LCD_SET_PAGE_ADDRESSx    | u8LocalRamPage_;
     Lcd_au8TxBuffer[1] = LCD_SET_COL_ADDRESS_MSNx | ( (u16ColumnStartLcd >> 4) & 0x0F);
     Lcd_au8TxBuffer[2] = LCD_SET_COL_ADDRESS_LSNx | ( u16ColumnStartLcd & 0x0F);
-      
-    LCD_COMMAND_MODE(); 
+
+    LCD_COMMAND_MODE();
     Lcd_u32Flags |= _LCD_FLAGS_COMMAND_IN_QUEUE;
     Lcd_u32CurrentMsgToken = SspWriteData(Lcd_Ssp, 3, &Lcd_au8TxBuffer[0]);
 
@@ -946,22 +946,22 @@ address.
 
 Algorithm notes:
 - Pixel 0,0: row 0, column 0 in LCD RAM becomes row 0, column 127 on the LCD
-- Must always update all 8 rows in a page, though any number of columns can be updated 
+- Must always update all 8 rows in a page, though any number of columns can be updated
 
 Requires:
  - u8LocalRamPage_ is the LCD page that is to be updated (provides row address for LCD RAM)
  - Lcd_sCurrentUpdateArea has the current area for the update
  - G_aau8LcdRamImage has the correct updated data to send
- - The 
-           
+ - The
+
 Promises:
  - Data from G_aau8LcdRamImage is parsed out by row & column for the current page that requires
    updating.  A maximum of 128 bytes are posted to Lcd_au8TxBuffer (updates a full page).
-   
+
 */
-static void LcdLoadPageToBuffer(u8 u8LocalRamPage_) 
+static void LcdLoadPageToBuffer(u8 u8LocalRamPage_)
 {
-  u16 u16LocalRamCurrentRow; 
+  u16 u16LocalRamCurrentRow;
   u8* pu8TxBufferParser;
   u8 u8LocalRamBitGroup;
   u8 u8CurrentBitInLcdPageMask;
@@ -969,19 +969,19 @@ static void LcdLoadPageToBuffer(u8 u8LocalRamPage_)
   u8 u8CurrentColumnByte;
 
   pu8TxBufferParser = &Lcd_au8TxBuffer[0];
-  
+
   /* Initialize the variables for the first column of pixel data */
-  u8LocalRamBitGroup = (Lcd_sCurrentUpdateArea.u16ColumnStart + Lcd_sCurrentUpdateArea.u16ColumnSize - 1) / 8; 
+  u8LocalRamBitGroup = (Lcd_sCurrentUpdateArea.u16ColumnStart + Lcd_sCurrentUpdateArea.u16ColumnSize - 1) / 8;
   u8CurrentPixelBitInLocalRamMask = 0x01 << ((Lcd_sCurrentUpdateArea.u16ColumnStart + Lcd_sCurrentUpdateArea.u16ColumnSize - 1) % 8);
-  u16LocalRamCurrentRow = u8LocalRamPage_ * LCD_PAGE_SIZE; 
+  u16LocalRamCurrentRow = u8LocalRamPage_ * LCD_PAGE_SIZE;
   u8CurrentBitInLcdPageMask = 0x01;
-  
-  /* Create the message data 1 LCD page column at a time by forming a byte reading the bits down the 8 rows in the current page. 
+
+  /* Create the message data 1 LCD page column at a time by forming a byte reading the bits down the 8 rows in the current page.
   Repeat this Lcd_sCurrentUpdateArea.u16ColumnSize times. */
   for(u16 i = 0; i < Lcd_sCurrentUpdateArea.u16ColumnSize; i++)
   {
     u8CurrentColumnByte = 0;
-  
+
     /* Read 8 bits down the rows of the RAM image at the current bit location */
     for(u8 j = 0; j < 8; j++)
     {
@@ -991,11 +991,11 @@ static void LcdLoadPageToBuffer(u8 u8LocalRamPage_)
         u8CurrentColumnByte |= ( u8CurrentBitInLcdPageMask << j );
       }
     }
-    
+
     /* The byte has been built: add to Lcd_au8TxBuffer */
     *pu8TxBufferParser = u8CurrentColumnByte;
     pu8TxBufferParser++;
-    
+
     /* Adjust the bitmask and watch for overflow to move to next byte in G_aau8LcdRamImage*/
     u8CurrentPixelBitInLocalRamMask >>= 1;
     if(u8CurrentPixelBitInLocalRamMask == 0x00)
@@ -1004,33 +1004,33 @@ static void LcdLoadPageToBuffer(u8 u8LocalRamPage_)
       u8LocalRamBitGroup--;
     }
   }
-  
+
   /* Lcd_au8TxBuffer now has all of the bytes for the current transfer */
   LCD_DATA_MODE();
   Lcd_u32CurrentMsgToken = SspWriteData(Lcd_Ssp, Lcd_sCurrentUpdateArea.u16ColumnSize, &Lcd_au8TxBuffer[0]);
- 
+
 } /* end LcdLoadPageToBuffer () */
-    
+
 
 /*----------------------------------------------------------------------------------------------------------------------
 Function: LcdUpdateScreenRefreshArea
 
 Description:
-Updates the current area that should be refrehed on the LCD based on any changes to the 
+Updates the current area that should be refrehed on the LCD based on any changes to the
 local LCD RAM.
 
 Requires:
  - sPixelsToUpdate_ points to the data structure that is being adjusted in the LCD RAM
-           
+
 Promises:
  - Lcd_sUpdateArea is increased in size so that it includes all the pixels of sPixelsToUpdate_;
    If sPixelsToUpdate_ is already fully included in the update area, then no changes are made.
-   
+
 */
 static void LcdUpdateScreenRefreshArea(PixelBlockType* sPixelsToUpdate_)
 {
   s16 s16Temp;
-  
+
   /* Determine if this is a new update */
   if(Lcd_sUpdateArea.u16RowSize == 0)
   {
@@ -1047,27 +1047,27 @@ static void LcdUpdateScreenRefreshArea(PixelBlockType* sPixelsToUpdate_)
     {
       Lcd_sUpdateArea.u16ColumnStart = sPixelsToUpdate_->u16ColumnStart;
     }
-    
+
     if(Lcd_sUpdateArea.u16RowStart > sPixelsToUpdate_->u16RowStart)
     {
       Lcd_sUpdateArea.u16RowStart = sPixelsToUpdate_->u16RowStart;
     }
-  
+
     /* Now check and adjust the end row and columns if they are beyond the current refresh frame */
     s16Temp = (sPixelsToUpdate_->u16RowStart + sPixelsToUpdate_->u16RowSize) - (Lcd_sUpdateArea.u16RowStart + Lcd_sUpdateArea.u16RowSize);
     if( s16Temp > 0 )
     {
       Lcd_sUpdateArea.u16RowSize += s16Temp;
     }
-  
+
     s16Temp = (sPixelsToUpdate_->u16ColumnStart + sPixelsToUpdate_->u16ColumnSize) - (Lcd_sUpdateArea.u16ColumnStart + Lcd_sUpdateArea.u16ColumnSize);
     if( s16Temp > 0 )
     {
       Lcd_sUpdateArea.u16ColumnSize += s16Temp;
     }
-  }    
-  
-} /* end LcdUpdateScreenRefreshArea() */      
+  }
+
+} /* end LcdUpdateScreenRefreshArea() */
 
 
 /***********************************************************************************************************************
@@ -1090,13 +1090,13 @@ static void LcdSM_Idle(void)
     Lcd_ReturnState = LcdSM_Idle;
     Lcd_pfnStateMachine = LcdSM_WaitTransfer;
   }
-  
+
   /* Monitor the refresh period */
   else if( IsTimeUp(&Lcd_u32RefreshTimer, LCD_REFRESH_TIME) )
   {
     /* Reset the refresh period reference value */
     Lcd_u32RefreshTimer = G_u32SystemTime1ms;
-    
+
     /* Do something only if there is something to do (i.e. at least one row of the LCD needs updating) */
     if(Lcd_sUpdateArea.u16RowSize != 0)
     {
@@ -1104,19 +1104,19 @@ static void LcdSM_Idle(void)
       Lcd_sCurrentUpdateArea.u16RowSize     = Lcd_sUpdateArea.u16RowSize;
       Lcd_sCurrentUpdateArea.u16ColumnSize  = Lcd_sUpdateArea.u16ColumnSize;
       Lcd_sCurrentUpdateArea.u16RowStart    = Lcd_sUpdateArea.u16RowStart;
-      Lcd_sCurrentUpdateArea.u16ColumnStart = Lcd_sUpdateArea.u16ColumnStart;     
+      Lcd_sCurrentUpdateArea.u16ColumnStart = Lcd_sUpdateArea.u16ColumnStart;
 
       Lcd_sUpdateArea.u16RowSize     = 0;
       Lcd_sUpdateArea.u16ColumnSize  = 0;
       Lcd_sUpdateArea.u16RowStart    = 0;
-      Lcd_sUpdateArea.u16ColumnStart = 0;     
+      Lcd_sUpdateArea.u16ColumnStart = 0;
 
       /* Calculate the number of pages to update -- all rows in a page must be updated to the LCD if any
       pixels are present on the page.  Eg. if 10 rows need updating, then up to 3 pages will have to be updated
       since there could be one pixel row on page n, eight on page n+1 and one on page n+2.  */
-      Lcd_u8PagesToUpdate = ( (Lcd_sCurrentUpdateArea.u16RowStart + Lcd_sCurrentUpdateArea.u16RowSize - 1) / LCD_PAGE_SIZE ) - 
+      Lcd_u8PagesToUpdate = ( (Lcd_sCurrentUpdateArea.u16RowStart + Lcd_sCurrentUpdateArea.u16RowSize - 1) / LCD_PAGE_SIZE ) -
                             ( (Lcd_sCurrentUpdateArea.u16RowStart) / LCD_PAGE_SIZE ) + 1;
-      
+
       /* Set the starting page; subsequent pages are incremental */
       Lcd_u8CurrentPage = Lcd_sCurrentUpdateArea.u16RowStart / LCD_PAGE_SIZE;
 
@@ -1130,7 +1130,7 @@ static void LcdSM_Idle(void)
     /* Nothing to do, so just make sure manual mode is not enabled */
     Lcd_u32Flags &= ~_LCD_MANUAL_MODE;
   }
-        
+
 } /* end LcdSM_Idle */
 
 
@@ -1153,7 +1153,7 @@ static void LcdSM_WaitTransfer(void)
       if(Lcd_u32Flags & _LCD_FLAGS_COMMAND_IN_QUEUE)
       {
         Lcd_u32Flags &= ~_LCD_FLAGS_COMMAND_IN_QUEUE;
-        
+
         LcdLoadPageToBuffer(Lcd_u8CurrentPage);
         Lcd_u8CurrentPage++;
         Lcd_u8PagesToUpdate--;
@@ -1162,7 +1162,7 @@ static void LcdSM_WaitTransfer(void)
       {
         LcdSetStartAddressForDataTransfer(Lcd_u8CurrentPage);
       }
-      
+
       Lcd_ReturnState = LcdSM_WaitTransfer;
     }
     /* Either just sent a command, or just sent that last data page */
@@ -1174,9 +1174,9 @@ static void LcdSM_WaitTransfer(void)
 
     Lcd_pfnStateMachine = Lcd_ReturnState;
   }
-  
+
   /* Check for timeout */
-  
+
 } /* end LcdSM_WaitTransfer() */
 
 

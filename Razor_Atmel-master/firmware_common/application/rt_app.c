@@ -69,6 +69,8 @@ static char      au8RtApp_AvgTimeStrP2[23];
 static bool b_button0Pressed;
 static bool b_button1Pressed;
 
+static bool b_2Players;
+
 /**********************************************************************************************************************
 Function Definitions
 **********************************************************************************************************************/
@@ -96,10 +98,19 @@ Promises:
 void RtAppInitialize(void)
 {
     ButtonAcknowledge(BUTTON0);
+    ButtonAcknowledge(BUTTON1);
+
 //  PWMAudioSetFrequency(BUZZER1,A4);
-    PixelAddressType pa_WelcomeMessageLoc1 = {LCD_SMALL_FONT_LINE2, 3};
+    PixelAddressType pa_WelcomeMessage = {LCD_SMALL_FONT_LINE1, 20};
+    PixelAddressType pa_WelcomeMessage2 = {LCD_SMALL_FONT_LINE2, 10};
+    PixelAddressType pa_WelcomeMessage3 = {LCD_SMALL_FONT_LINE4, 20};
+    PixelAddressType pa_WelcomeMessage4 = {LCD_SMALL_FONT_LINE5,10};
     LcdClearScreen();
-    LcdLoadString("Push BUTTON0 to start!", LCD_FONT_SMALL, &pa_WelcomeMessageLoc1);
+    LcdLoadString("Push BUTTON 0 to", LCD_FONT_SMALL, &pa_WelcomeMessage);
+    LcdLoadString("start 1 player mode", LCD_FONT_SMALL, &pa_WelcomeMessage2);
+    LcdLoadString("Push BUTTON 1 to", LCD_FONT_SMALL, &pa_WelcomeMessage3);
+    LcdLoadString("start 2 player mode", LCD_FONT_SMALL, &pa_WelcomeMessage4);
+
     u32RtApp_TotalTimeP1 = 0;
     u32RtApp_TotalTimeP2 = 0;
 
@@ -186,10 +197,27 @@ static void RtAppSM_Idle(void)
     {
         ButtonAcknowledge(BUTTON0);
         LcdClearScreen();
+
+
+        b_2Players = 0;
+        u16RtApp_WaitCount = 0;
         RtApp_StateMachine = RtAppSM_RFT;
-            u16RtApp_WaitCount = 0;
 
     }
+
+    if(WasButtonPressed(BUTTON1))
+    {
+        ButtonAcknowledge(BUTTON1);
+        LcdClearScreen();
+
+
+        b_2Players = 1;
+        u16RtApp_WaitCount = 0;
+        RtApp_StateMachine = RtAppSM_RFT;
+
+
+    }
+
 
 
 
@@ -209,13 +237,26 @@ static void RtAppSM_RFT(void)
     static PixelAddressType pa_WFTLine1 = {LCD_SMALL_FONT_LINE2, 10};
     static PixelAddressType pa_WFTLine2 = {LCD_SMALL_FONT_LINE4, 10};
     static PixelAddressType pa_WFTLine3 = {LCD_SMALL_FONT_LINE6, 24};
+    static PixelAddressType pa_WFTLineP1 = {LCD_SMALL_FONT_LINE2, 30};
 
-    LcdLoadString("P1 : BUTTON0 ",LCD_FONT_SMALL,&pa_WFTLine1);
-    LcdLoadString("P2 : BUTTON1 ",LCD_FONT_SMALL,&pa_WFTLine2);
 
-    LcdLoadString("When LEDs flash",LCD_FONT_SMALL,&pa_WFTLine3);
 
-    RtApp_StateMachine = RtAppSM_WFT;
+    if(b_2Players)
+    {
+        LcdLoadString("P1 : BUTTON0 ",LCD_FONT_SMALL,&pa_WFTLine1);
+        LcdLoadString("P2 : BUTTON1 ",LCD_FONT_SMALL,&pa_WFTLine2);
+        LcdLoadString("When LEDs flash",LCD_FONT_SMALL,&pa_WFTLine3);
+
+
+    }else //SINGLE PLAYER
+    {
+        LcdLoadString("Press BUTTON0 ",LCD_FONT_SMALL,&pa_WFTLineP1);
+        LcdLoadString("When LEDs flash",LCD_FONT_SMALL,&pa_WFTLine3);
+
+
+    }
+        RtApp_StateMachine = RtAppSM_WFT;
+
 }
 
 static void RtAppSM_WFT(void)
@@ -224,13 +265,15 @@ static void RtAppSM_WFT(void)
 
     if(u16RtApp_WaitCount == u16RtApp_WaitTime)
     {
-
+        RtApp_AllLedsOn();
         u16RtApp_ReactTimer = 0;
         u16RtApp_WaitCount = 0;
         b_button0Pressed = 0;
         b_button1Pressed = 0;
+        ButtonAcknowledge(BUTTON0);
+        ButtonAcknowledge(BUTTON1);
         RtApp_StateMachine = RtAppSM_WFR;
-        RtApp_AllLedsOn();
+
     }else
     {
         u16RtApp_WaitCount++;
@@ -242,15 +285,20 @@ static void RtAppSM_WFR(void)
 {
 
 
-
-
-    if(WasButtonPressed(BUTTON0) && b_button0Pressed ==0)
+    if(WasButtonPressed(BUTTON0) && b_button0Pressed ==0) //If BUTTON0 was pressed for the first time in this state
     {
         ButtonAcknowledge(BUTTON0);
         u16RtApp_ReactTimeP1 = u16RtApp_ReactTimer;
         b_button0Pressed = 1;
+        if(!b_2Players) //If one player, move to next state
+        {
+            RtApp_AllLedsOff();
+            RtApp_StateMachine = RtAppSM_TimeToStr;
+        }
     }
-    if (WasButtonPressed(BUTTON1) && b_button1Pressed == 0)
+
+
+    if (b_2Players && WasButtonPressed(BUTTON1) && b_button1Pressed == 0) //If BUTTON1 was pressed for the first time in this state
     {
         ButtonAcknowledge(BUTTON1);
         u16RtApp_ReactTimeP2 = u16RtApp_ReactTimer;
@@ -270,8 +318,14 @@ static void RtAppSM_WFR(void)
 }
 static void RtAppSM_TimeToStr(void)
 {
-    sprintf(au8RtApp_TimeStrP1,"P1 : %d.%d seconds",u16RtApp_ReactTimeP1 / 1000, u16RtApp_ReactTimeP1 % 1000);
-    sprintf(au8RtApp_TimeStrP2,"P2 : %d.%d seconds",u16RtApp_ReactTimeP2 / 1000, u16RtApp_ReactTimeP2 % 1000);
+    if(b_2Players)
+    {
+        sprintf(au8RtApp_TimeStrP1,"P1 : %d.%d seconds",u16RtApp_ReactTimeP1 / 1000, u16RtApp_ReactTimeP1 % 1000);
+        sprintf(au8RtApp_TimeStrP2,"P2 : %d.%d seconds",u16RtApp_ReactTimeP2 / 1000, u16RtApp_ReactTimeP2 % 1000);
+
+    }
+    else sprintf(au8RtApp_TimeStrP1,"   %d.%d seconds",u16RtApp_ReactTimeP1 / 1000, u16RtApp_ReactTimeP1 % 1000);
+
 
     RtApp_StateMachine = RtAppSM_ShowTime;
     LcdClearScreen();
@@ -283,8 +337,16 @@ static void RtAppSM_ShowTime(void)
     static PixelAddressType pa_ShowP1 = {LCD_SMALL_FONT_LINE2, 10};
     static PixelAddressType pa_ShowP2 = {LCD_SMALL_FONT_LINE4, 10};
 
-    LcdLoadString(au8RtApp_TimeStrP1, LCD_FONT_SMALL, &pa_ShowP1);
-    LcdLoadString(au8RtApp_TimeStrP2, LCD_FONT_SMALL, &pa_ShowP2);
+    if(b_2Players)
+    {
+        LcdLoadString(au8RtApp_TimeStrP1, LCD_FONT_SMALL, &pa_ShowP1);
+        LcdLoadString(au8RtApp_TimeStrP2, LCD_FONT_SMALL, &pa_ShowP2);
+    }else
+    {
+        LcdLoadString(au8RtApp_TimeStrP1, LCD_FONT_SMALL, &pa_ShowP1);
+
+    }
+
 
     u16RtApp_STWait = 0;
     RtApp_StateMachine = RtAppSM_CalcResults;
@@ -299,7 +361,8 @@ static void RtAppSM_CalcResults(void)
 
         u8RtApp_Trials++;
         u32RtApp_TotalTimeP1 += u16RtApp_ReactTimeP1;
-        u32RtApp_TotalTimeP2 += u16RtApp_ReactTimeP2;
+
+        if(b_2Players) u32RtApp_TotalTimeP2 += u16RtApp_ReactTimeP2;
 
         u16RtApp_ReactTimer = 0;
 
@@ -319,8 +382,13 @@ static void RtAppSM_ResultsToStr(void)
      u16RtApp_AvgTimeP1 = u32RtApp_TotalTimeP1/NUMBER_OF_TRIALS;
      u16RtApp_AvgTimeP2 = u32RtApp_TotalTimeP2/NUMBER_OF_TRIALS;
 
-     sprintf(au8RtApp_AvgTimeStrP1,"P1 :   %d.%d seconds",u16RtApp_AvgTimeP1 / 1000, u16RtApp_AvgTimeP1 % 1000);
-     sprintf(au8RtApp_AvgTimeStrP2,"P2 :   %d.%d seconds",u16RtApp_AvgTimeP2 / 1000, u16RtApp_AvgTimeP2 % 1000);
+
+     if(b_2Players)
+     {
+           sprintf(au8RtApp_AvgTimeStrP1,"P1 :   %d.%d seconds",u16RtApp_AvgTimeP1 / 1000, u16RtApp_AvgTimeP1 % 1000);
+           sprintf(au8RtApp_AvgTimeStrP2,"P2 :   %d.%d seconds",u16RtApp_AvgTimeP2 / 1000, u16RtApp_AvgTimeP2 % 1000);
+     } else   sprintf(au8RtApp_AvgTimeStrP1,"    %d.%d seconds",u16RtApp_AvgTimeP1 / 1000, u16RtApp_AvgTimeP1 % 1000);
+
 
      RtApp_StateMachine = RtAppSM_DispResults;
 
@@ -329,35 +397,57 @@ static void RtAppSM_ResultsToStr(void)
 static void RtAppSM_DispResults(void)
 {
 
-    PixelAddressType pa_disp1 = {LCD_SMALL_FONT_LINE0,6};
-    PixelAddressType pa_disp2 = {LCD_SMALL_FONT_LINE2,0};
+    PixelAddressType pa_disp1 = {LCD_SMALL_FONT_LINE0,10};
     PixelAddressType pa_disp3 = {LCD_SMALL_FONT_LINE4-3,0};
-    PixelAddressType pa_disp4 = {LCD_SMALL_FONT_LINE5+2,25};
     PixelAddressType pa_disp5 = {LCD_SMALL_FONT_LINE7, 12};
 
-    LcdLoadString("Mean reaction times", LCD_FONT_SMALL, &pa_disp1);
-    LcdLoadString(au8RtApp_AvgTimeStrP1, LCD_FONT_SMALL, &pa_disp2);
-    LcdLoadString(au8RtApp_AvgTimeStrP2, LCD_FONT_SMALL, &pa_disp3);
+    LcdLoadString("Mean reaction time", LCD_FONT_SMALL, &pa_disp1);
 
-    if(u16RtApp_AvgTimeP1 < u16RtApp_AvgTimeP2)
+    if(b_2Players)
+    {
 
-        LcdLoadString("PLAYER 1 WINS!", LCD_FONT_SMALL, &pa_disp4);
+        PixelAddressType pa_disp2 = {LCD_SMALL_FONT_LINE2,0};
+        PixelAddressType pa_disp4 = {LCD_SMALL_FONT_LINE5+2,26};
 
-    else if(u16RtApp_AvgTimeP1 > u16RtApp_AvgTimeP2)
+        LcdLoadString(au8RtApp_AvgTimeStrP1, LCD_FONT_SMALL, &pa_disp2);
+        LcdLoadString(au8RtApp_AvgTimeStrP2, LCD_FONT_SMALL, &pa_disp3);
 
-        LcdLoadString("PLAYER 2 WINS!", LCD_FONT_SMALL, &pa_disp4);
 
-    else LcdLoadString("TIE!", LCD_FONT_SMALL, &pa_disp4);
+        if(u16RtApp_AvgTimeP1 < u16RtApp_AvgTimeP2)
+
+            LcdLoadString("PLAYER 1 WINS!", LCD_FONT_SMALL, &pa_disp4);
+
+        else if(u16RtApp_AvgTimeP1 > u16RtApp_AvgTimeP2)
+
+            LcdLoadString("PLAYER 2 WINS!", LCD_FONT_SMALL, &pa_disp4);
+
+        else LcdLoadString("TIE!", LCD_FONT_SMALL, &pa_disp4);
+    }
+    else
+        LcdLoadString(au8RtApp_AvgTimeStrP1, LCD_FONT_SMALL, &pa_disp3);
+
+
+
 
 
     LcdLoadString("BUTTON1 to restart", LCD_FONT_SMALL, &pa_disp5);
+    RtApp_StateMachine = RtAppSM_WaitRestart;
 
-    if(WasButtonPressed(BUTTON1))
+
+}
+
+
+static void RtAppSM_WaitRestart(void)
+
+{
+      if(WasButtonPressed(BUTTON1))
     {
         ButtonAcknowledge(BUTTON1);
     RtApp_StateMachine = RtAppInitialize;
     }
+
 }
+
 
 /*-------------------------------------------------------------------------------------------------------------------*/
 /* Handle an error */

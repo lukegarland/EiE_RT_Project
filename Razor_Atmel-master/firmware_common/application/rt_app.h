@@ -69,6 +69,7 @@ static void RtAppSM_ShowTime(void);     // Shows the reaction timer to the user 
 static void RtAppSM_CalcResults(void);  // Calculates mean reaction time
 static void RtAppSM_ResultsToStr(void);
 static void RtAppSM_DispResults(void);  // Displays Reaction time results
+static void RtAppSM_WaitRestart(void);
 
 
 #endif /* __RT_APP_H */
