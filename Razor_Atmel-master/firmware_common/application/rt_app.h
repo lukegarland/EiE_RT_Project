@@ -28,10 +28,14 @@ Type Definitions
 /**********************************************************************************************************************
 Constants / Definitions
 **********************************************************************************************************************/
-#define NUMBER_OF_TRIALS (u8) 5
+#define NUMBER_OF_TRIALS (u8) 5  // DOES NOT INCLUDE THE SPOOFED TRIALS
+#define SPOOF_OODS (u8) 3        // Odds for buzzer spoof (Ex. 1 in SPOOF_OODS)
+// All times below are in ms.
 #define MAX_WAIT (u16) 10000
-#define MIN_WAIT (u16) 5000
-#define SHOW_WAIT1 (u16) 2000
+#define MIN_WAIT (u16) 4000
+#define SHOW_WAIT (u16) 2000
+#define SPOOFPENALTY (u16) 1000
+#define BUZZERTIME (u16) 200
 
 /**********************************************************************************************************************
 Function Declarations
@@ -61,6 +65,7 @@ State Machine Declarations
 static void RtAppSM_Idle(void);
 
 static void RtAppSM_Error(void);
+static void RtAppSM_AskMode(void);
 static void RtAppSM_RFT(void);          // Ready for Trigger
 static void RtAppSM_WFT(void);          // Wait for reaction trigger (sound or LED flash)
 static void RtAppSM_WFR(void);          // Wait for the user's Reaction.
@@ -70,6 +75,11 @@ static void RtAppSM_CalcResults(void);  // Calculates mean reaction time
 static void RtAppSM_ResultsToStr(void);
 static void RtAppSM_DispResults(void);  // Displays Reaction time results
 static void RtAppSM_WaitRestart(void);
+
+
+
+static void RtAppSM_SpoofReact(void);
+static void RtAppSM_SpoofDispMsg(void);
 
 
 #endif /* __RT_APP_H */
